@@ -11,7 +11,7 @@ export const DEFAULT_MODEL = "z-ai/glm-5.1";
 
 // 模型列表（label 是下拉显示；persona=1 使用 PROMPT_1；persona=2 使用 PROMPT_2）
 export const MODELS = [
-  { id: "glm-4.7-flash", label: "glm-4.7-flash", persona: 1 },
+  { id: "z-ai/glm-4.7-flash", label: "glm-4.7-flash", persona: 1 },
   { id: "z-ai/glm-5.1", label: "glm-5.1", persona: 2 },
   { id: "openai/gpt-oss-120b", label: "gpt-oss-120b", persona: 3 },
 ];
