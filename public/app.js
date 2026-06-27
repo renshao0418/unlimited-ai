@@ -435,9 +435,9 @@
     initModels();
     setupResizeObserver();
     setupViewportListener();
-    updateSpacer();
+    //updateSpacer();
     restoreSessionIfEnabled();
-    scrollToBottom();
+    //scrollToBottom();
   }
 
   init();
