@@ -419,8 +419,8 @@
         `Output(估算): ≈${outEst} | Total Out(估算): ≈${totalOutEstimate} | Speed(估算): ${tps.toFixed(2)} tok/s | (usage未返回)`;
     }
 
-    updateSpacer();
-    scrollToBottom();
+    //updateSpacer();
+    //scrollToBottom();
   }
 
   sendBtn.addEventListener("click", send);
