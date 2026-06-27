@@ -332,15 +332,36 @@
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
 
+    let pendingText = "";
+    let isScheduled = false;
+    let carryOver = "";
+
+    const flushText = () => {
+      if (pendingText) {
+        full += pendingText;
+        aiRow.bubble.textContent = full;
+        pendingText = "";
+      }
+      isScheduled = false;
+    };
+
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
       const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n");
+      const combined = carryOver + chunk;
+      const lines = combined.split("\n");
 
-      for (const line of lines) {
-        if (!line.startsWith("data: ")) continue;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (!line.startsWith("data: ")) {
+          if (i === lines.length - 1) {
+            carryOver = line;
+          }
+          continue;
+        }
 
         const jsonStr = line.replace("data: ", "").trim();
         if (!jsonStr || jsonStr === "[DONE]") continue;
@@ -352,13 +373,24 @@
           const delta = parsed.choices?.[0]?.delta?.content;
           if (delta) {
             if (!outStartMs) outStartMs = performance.now();
-            full += delta;
-            aiRow.bubble.textContent = full;
-            if (isNearBottom()) scrollToBottom();
+            pendingText += delta;
+
+            if (!isScheduled) {
+              isScheduled = true;
+              requestAnimationFrame(flushText);
+            }
           }
         } catch {}
       }
+
+      if (!combined.endsWith("\n")) {
+        carryOver = lines[lines.length - 1] || "";
+      } else {
+        carryOver = "";
+      }
     }
+
+    flushText();
 
     outEndMs = performance.now();
     session.push({ role: "assistant", content: full });
